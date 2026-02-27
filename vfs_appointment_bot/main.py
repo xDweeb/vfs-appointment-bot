@@ -5,6 +5,7 @@ from typing import Dict
 
 from vfs_appointment_bot.utils.config_reader import get_config_value, initialize_config
 from vfs_appointment_bot.utils.timer import countdown
+from vfs_appointment_bot.utils.telegram_log_handler import TelegramLogHandler
 from vfs_appointment_bot.vfs_bot.vfs_bot import LoginError
 from vfs_appointment_bot.vfs_bot.vfs_bot_factory import (
     UnsupportedCountryError,
@@ -47,6 +48,7 @@ def main() -> None:
     """
     initialize_logger()
     initialize_config()
+    add_telegram_logger()
 
     parser = argparse.ArgumentParser(
         description="VFS Appointment Bot: Checks for appointments at VFS Global"
@@ -118,6 +120,20 @@ def initialize_logger():
             stream_handler,
         ],
     )
+
+
+def add_telegram_logger():
+    """Add Telegram logging handler after config is loaded."""
+    bot_token = get_config_value("telegram", "bot_token")
+    chat_id = get_config_value("telegram", "chat_id")
+    if bot_token and chat_id and bot_token != "bot_token":
+        telegram_handler = TelegramLogHandler(bot_token, chat_id)
+        telegram_handler.setFormatter(
+            logging.Formatter("[%(asctime)s] %(message)s", datefmt="%H:%M:%S")
+        )
+        telegram_handler.setLevel(logging.INFO)
+        logging.getLogger().addHandler(telegram_handler)
+        logging.info("Telegram logging enabled")
 
 
 if __name__ == "__main__":

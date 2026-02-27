@@ -5,35 +5,36 @@ class UnsupportedCountryError(Exception):
     """Raised when an unsupported country code is provided."""
 
 
-def get_vfs_bot(source_country_code: str, destination_country_code: str) -> VfsBot:
-    """Retrieves the appropriate VfsBot class for a given country.
+# Schengen countries that share the same VFS page structure
+SCHENGEN_COUNTRIES = {"PT", "ES", "FR", "NL", "BE", "AT", "CH", "CZ", "PL", "SE", "NO", "DK", "FI", "GR", "HU"}
 
-    This function searches for a matching subclass of `VfsBot` based on the
-    provided destination country code (ISO 3166-1 alpha-2).
-    If no matching class is found, an `UnsupportedCountryError` exception is raised.
+
+def get_vfs_bot(source_country_code: str, destination_country_code: str) -> VfsBot:
+    """Retrieves the appropriate VfsBot class for a given country pair.
 
     Args:
-        source_country_code (str): The ISO 3166-1 alpha-2 country code where you're applying from.
-        destination_country_code (str): The ISO 3166-1 alpha-2 country code where the appointment is needed.
+        source_country_code (str): Where you're applying from (e.g., "MA").
+        destination_country_code (str): Where the appointment is (e.g., "PT", "ES").
 
     Returns:
-        VfsBot: An instance of the `VfsBot` subclass specific to the provided country.
+        VfsBot: An instance of the appropriate VfsBot subclass.
 
     Raises:
         UnsupportedCountryError: If the provided country is not supported.
     """
+    dest = destination_country_code.upper()
 
-    country_lower = destination_country_code
-
-    if country_lower == "DE":
+    if dest in SCHENGEN_COUNTRIES:
+        from .vfs_bot_schengen import VfsBotSchengen
+        return VfsBotSchengen(source_country_code, dest)
+    elif dest == "DE":
         from .vfs_bot_de import VfsBotDe
-
         return VfsBotDe(source_country_code)
-    elif country_lower == "IT":
+    elif dest == "IT":
         from .vfs_bot_it import VfsBotIt
-
         return VfsBotIt(source_country_code)
     else:
         raise UnsupportedCountryError(
-            f"Country {destination_country_code} is not supported"
+            f"Country {destination_country_code} is not supported. "
+            f"Supported: DE, IT, {', '.join(sorted(SCHENGEN_COUNTRIES))}"
         )

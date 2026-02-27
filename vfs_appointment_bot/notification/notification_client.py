@@ -52,7 +52,7 @@ class NotificationClient(ABC):
             required_config_keys (list[str]): A list of required keys that must be
                 present in the configuration section.
         """
-        missing_keys = required_config_keys - self.config.keys()
+        missing_keys = set(required_config_keys) - set(self.config.keys())
         if missing_keys:
             raise NotificationClientConfigValidationError(
                 f"Missing required configuration keys: {', '.join(missing_keys)}"

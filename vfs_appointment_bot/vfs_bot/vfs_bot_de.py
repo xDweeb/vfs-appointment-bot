@@ -75,12 +75,15 @@ class VfsBotDe(VfsBot):
         Args:
             page (playwright.sync_api.Page): The Playwright page object used for browser interaction.
         """
-        policies_reject_button = page.get_by_role("button", name="Reject All")
-        if policies_reject_button is not None:
-            policies_reject_button.click()
-            logging.debug("Rejected all cookie policies")
+        try:
+            policies_reject_button = page.get_by_role("button", name="Reject All")
+            if policies_reject_button.count() > 0:
+                policies_reject_button.first.click()
+                logging.debug("Rejected all cookie policies")
+        except Exception:
+            logging.debug("No cookie policy button found, continuing")
 
-    def check_for_appontment(
+    def check_for_appointment(
         self, page: Page, appointment_params: Dict[str, str]
     ) -> Optional[List[str]]:
         """
@@ -139,5 +142,3 @@ class VfsBotDe(VfsBot):
             return appointment_dates
         except Exception:
             return None
-
-        return None

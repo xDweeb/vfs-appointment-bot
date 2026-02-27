@@ -9,9 +9,7 @@ def get_notification_client(channel: str) -> NotificationClient:
     """Retrieves the appropriate notification client for a given channel.
 
     This function creates an instance of a notification client class based on the
-    provided channel string. Currently supported channels include "telegram" and
-    "slack". If an unsupported channel is provided, a `ValueError` exception is
-    raised.
+    provided channel string. Currently only "telegram" is supported.
 
     Args:
         channel (str): The notification channel name.
@@ -23,18 +21,11 @@ def get_notification_client(channel: str) -> NotificationClient:
         UnsupportedNotificationChannelError: If the provided notification channel is not supported.
     """
 
+    channel = channel.strip().lower()
     if channel == "telegram":
         from .telegram_client import TelegramClient
 
         return TelegramClient()
-    elif channel == "slack":
-        from .twilio_client import TwilioClient
-
-        return TwilioClient()
-    elif channel == "email":
-        from .email_client import EmailClient
-
-        return EmailClient()
     else:
         raise UnsupportedNotificationChannelError(
             f"Notification channel '{channel}' is not supported"

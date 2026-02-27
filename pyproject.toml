@@ -23,7 +23,7 @@ build-backend = "poetry.core.masonry.api"
 python = "^3.9"
 playwright = "^1.43.0"
 playwright-stealth = "^1.0.6"
-twilio = "^9.0.4"
+requests = "^2.31.0"
 tqdm = "^4.66.2"
 
 [tool.poetry.dev-dependencies]
