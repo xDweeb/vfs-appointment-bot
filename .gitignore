@@ -29,6 +29,6 @@ venv
 # Logs
 app.log
 
-# Local Config
-config.ini
+# Local Config (ignore personal copies but keep the template)
 *.ini
+!config/config.ini
